@@ -21,7 +21,6 @@ const favoriteBlog = (blogs) => {
 const mostBlogs = (blogs) => {
   //group the blog post by author..
   const groupByAuthor = _.groupBy(blogs, 'author');
-  console.log(groupByAuthor);
   //count the number of blog post, posted by an author.
   const postCount = _.map(groupByAuthor, (posts, author) => {
     return { author: author, blogs: posts.length };
@@ -33,7 +32,6 @@ const mostBlogs = (blogs) => {
 //find the author with most likes
 const mostLikes = (blogs) => {
   const groupByAuthor = _.groupBy(blogs, 'author');
-  console.log(groupByAuthor);
   const likesCount = _.map(groupByAuthor, (posts, author) => {
     return {
       author: author,
@@ -56,11 +54,18 @@ const nonExistingId = () => {
   });
 };
 
+const blogsInDb = async () => {
+  const blogs = await Blog.find({});
+  return _.map(blogs, (blog) => blog.toJSON());
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
   mostLikes,
-  isMissingOrEmpty
+  isMissingOrEmpty,
+  nonExistingId,
+  blogsInDb,
 };

@@ -2,14 +2,12 @@ const postRouter = require('express').Router();
 const Blog = require('../models/post');
 const { isMissingOrEmpty } = require('../utils/list_helper');
 require('express-async-errors');
-const generateDummyBlog = require('../utils/data');
-const sampleBlog = generateDummyBlog(1);
 
 // Route to handle the creation of a new blog post
 // Validates input data, checks for duplicate titles, and saves the blog to the database
 postRouter.post('', async (req, res, next) => {
   const { title, author, url, likes } = req.body;
-  
+
   // Check if title or author is missing or empty
   if (isMissingOrEmpty(title) || isMissingOrEmpty(author)) {
     return res.status(400).json({ error: 'The title or author is missing' });

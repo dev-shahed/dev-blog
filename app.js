@@ -4,9 +4,7 @@ const cors = require('cors');
 const connectDB = require('./utils/db');
 const middleware = require('./utils/middleware');
 const postRouter = require('./controller/posts');
-const generateDummyBlog = require('./utils/data');
-
-const data = generateDummyBlog(2);
+const { blogsInDb } = require('./utils/list_helper');
 
 // Connect Database..
 connectDB();
