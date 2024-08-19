@@ -1,9 +1,10 @@
-const connectDB = require('./utils/db');
 const express = require('express');
 const app = express();
+const connectDB = require('./utils/db');
 const cors = require('cors');
 const middleware = require('./utils/middleware');
 const postRouter = require('./controller/posts');
+
 
 // Connect Database..
 connectDB();

@@ -7,6 +7,8 @@ const { blogs } = require('../utils/data');
 const Blog = require('../models/post');
 const mongoose = require('mongoose');
 const api = supertest(app);
+const _ = require('lodash');
+const { stringify } = require('node:querystring');
 require('express-async-errors');
 
 describe('Test blog post', () => {
@@ -21,6 +23,40 @@ describe('Test blog post', () => {
         .get('/api/posts')
         .expect(200)
         .expect('Content-Type', /application\/json/);
+    });
+
+    test('all posts are returned', async () => {
+      const response = await api.get('/api/posts');
+      const dbBlog = await listHelper.blogsInDb();
+      assert.strictEqual(response?.body?.length, dbBlog.length);
+    });
+
+    test('a specific post within the returned posts', async () => {
+      const response = await api.get('/api/posts');
+      const titles = _.map(response.body, 'title');
+      assert(titles.includes('Type wars'));
+    });
+
+    describe('viewing a specific post', () => {
+      test('success with a valid id', async () => {
+        const dbBlog = await listHelper.blogsInDb();
+        const blogToView = dbBlog[0];
+        const result = await api
+          .get(`/api/posts/${blogToView.id}`)
+          .expect(200)
+          .expect('Content-Type', /application\/json/);
+        assert.deepStrictEqual(result.body, blogToView);
+      });
+
+      test('fails with statuscode 404 if blog does not exit', async () => {
+        const validNonexistingId = await listHelper.nonExistingId();
+        await api.get(`/api/posts/${validNonexistingId}`).expect(404);
+      });
+
+      test('fails with statuscode 400 if id is invalid', async () => {
+        const invalidId = '5a3d5da59070081a82a3445';
+        await api.get(`/api/posts/${invalidId}`).expect(400);
+      });
     });
   });
 

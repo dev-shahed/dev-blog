@@ -1,5 +1,6 @@
 const postRouter = require('express').Router();
-const Blog = require('../models/post');
+const mongoose = require('mongoose');
+const Blog = require('../models/post.js');
 const { isMissingOrEmpty } = require('../utils/list_helper');
 require('express-async-errors');
 
@@ -36,7 +37,7 @@ postRouter.post('', async (req, res, next) => {
 
 // Route to handle fetching all blog posts from the database
 // Returns a list of all blogs in the response
-postRouter.get('', async (req, res, next) => {
+postRouter.get('', async (req, res) => {
   const blogs = await Blog.find({});
   res.status(200).json(blogs);
 });
@@ -45,7 +46,7 @@ postRouter.get('', async (req, res, next) => {
 
 // Route to handle fetching a single blog post by its ID
 // If the blog is found, it is returned in the response; otherwise, a 404 error is returned
-postRouter.get('/:id', async (req, res, next) => {
+postRouter.get('/:id', async (req, res) => {
   const id = req.params.id;
   const theBlog = await Blog.findById(id);
   if (!theBlog) {
