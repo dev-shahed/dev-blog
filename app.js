@@ -1,10 +1,9 @@
+const connectDB = require('./utils/db');
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const connectDB = require('./utils/db');
 const middleware = require('./utils/middleware');
 const postRouter = require('./controller/posts');
-const { blogsInDb } = require('./utils/list_helper');
 
 // Connect Database..
 connectDB();
