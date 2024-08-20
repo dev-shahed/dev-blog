@@ -84,12 +84,23 @@ describe("Test blog post", () => {
           url: "https://example.com",
           likes: 0,
         };
-
         await api.post("/api/posts").send(invalidBlog).expect(400);
         const blogsAtEnd = await listHelper.blogsInDb();
         assert.strictEqual(blogsAtEnd.length, blogs.length);
       });
     });
+    describe('deletion of a blog', async () => {
+       const blogAtStart = await listHelper.blogsInDb();
+       const blogToDelete = blogAtStart[0];
+
+       api.delete(`/api/posts/${blogToDelete.id}`).expect(204);
+
+       const blogAtEnd = await listHelper.blogsInDb();
+       console.log(blogAtEnd.length)
+       assert.strictEqual(blogAtEnd.length, blogs.length - 1)
+       const titles = _.map(blogAtStart)
+       assert(!titles.includes(blogToDelete.title))
+    })
   });
 
   describe("dummy", () => {
