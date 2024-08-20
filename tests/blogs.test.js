@@ -61,7 +61,7 @@ describe("Test blog post", () => {
     describe("addition of a blog", () => {
       test("succed with valid data", async () => {
         const newBlog = {
-          title: "Test Title",
+          title: "A Sample Blog Title",
           author: "John Doe",
           url: "https://example.com",
           likes: 0,
@@ -74,7 +74,20 @@ describe("Test blog post", () => {
         const blogsAtEnd = await listHelper.blogsInDb();
         assert.strictEqual(blogsAtEnd.length, blogs.length + 1);
         const titles = _.map(blogsAtEnd, "title");
-        assert(titles.includes("Test Title"));
+        assert(titles.includes("A Sample Blog Title"));
+      });
+
+      test("fails with statuscode 400 if data is invaid", async () => {
+        const invalidBlog = {
+          title: "Blog",
+          author: "John Doe",
+          url: "https://example.com",
+          likes: 0,
+        };
+
+        await api.post("/api/posts").send(invalidBlog).expect(400);
+        const blogsAtEnd = await listHelper.blogsInDb();
+        assert.strictEqual(blogsAtEnd.length, blogs.length);
       });
     });
   });

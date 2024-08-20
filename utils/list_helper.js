@@ -9,7 +9,7 @@ const dummy = (blogs) => {
 // Check if an ID is non-existing
 const nonExistingId = () => {
   const blog = new Blog({
-    title: 'Test Title',
+    title: 'A Sample Blog Title',
     author: 'John Doe',
     url: 'https://example.com',
     likes: 44,
