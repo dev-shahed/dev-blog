@@ -8,29 +8,26 @@ const unknownEndpoint = (req, res) => {
 // Middleware for handling errors
 const errorHandler = (error, req, res, next) => {
   logger.error(error.message);
-
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformed id' });
-  }
-  if (error.name === 'ValidationError') {
+  } else if (error.name === 'ValidationError') {
     return res.status(400).send({ error: error.message });
-  }
-  if (error.code === 11000) {
-    return res.status(409).send({ error: 'duplicate key error' });
-  }
-  if (error.name === 'UnauthorizedError') {
+  } else if (
+    error.code === 11000 &&
+    error.name === 'MongoServerError' &&
+    error.message.includes('E11000 duplicate key error')
+  ) {
+    return res.status(409).send({ error: 'expected `username` to be unique' });
+  } else if (error.name === 'UnauthorizedError') {
     return res.status(401).send({ error: 'unauthorized access' });
-  }
-  if (error.name === 'ForbiddenError') {
+  } else if (error.name === 'ForbiddenError') {
     return res.status(403).send({ error: 'forbidden access' });
-  }
-  if (error.status === 404) {
+  } else if (error.status === 404) {
     return res.status(404).send({ error: 'resource not found' });
+  } else {
+    res.status(500).send({ error: 'internal server error' });
+    next(error); // Call next only after the response
   }
-
-  res.status(500).send({ error: 'internal server error' });
-
-  next(error);
 };
 
 // Exporting middlewares for use in other files

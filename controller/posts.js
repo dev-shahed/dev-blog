@@ -2,12 +2,14 @@ const postRouter = require('express').Router();
 const mongoose = require('mongoose');
 const Blog = require('../models/post.js');
 const { isMissingOrEmpty } = require('../utils/list_helper');
+const User = require('../models/user.js');
 require('express-async-errors');
 
 // Route to handle the creation of a new blog post
 // Validates input data, checks for duplicate titles, and saves the blog to the database
 postRouter.post('', async (req, res, next) => {
-  const { title, author, url, likes } = req.body;
+  const { title, author, url, likes, userId } = req.body;
+  const user = await User.findById(userId);
 
   // Check if title or author is missing or empty
   if (isMissingOrEmpty(title) || isMissingOrEmpty(author)) {
@@ -26,10 +28,13 @@ postRouter.post('', async (req, res, next) => {
     author: author,
     url: url,
     likes: likes,
+    user: user._id,
   });
 
   // Save the blog to the database and return the saved blog as a response
   const savedBlog = await blog.save();
+  user.posts = user.posts.concat(savedBlog._id);
+  await user.save();
   res.status(201).json(savedBlog);
 });
 
