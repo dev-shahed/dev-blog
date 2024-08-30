@@ -9,13 +9,15 @@ require('express-async-errors');
 // Validates input data, checks for duplicate titles, and saves the blog to the database
 postRouter.post('', async (req, res, next) => {
   const { title, author, url, likes, userId } = req.body;
+  // Find the user by ID
   const user = await User.findById(userId);
-
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
   // Check if title or author is missing or empty
   if (isMissingOrEmpty(title) || isMissingOrEmpty(author)) {
     return res.status(400).json({ error: 'The title or author is missing' });
   }
-
   // Ensure the blog title is unique
   const blogExist = await Blog.findOne({ title: title });
   if (blogExist) {
@@ -27,7 +29,7 @@ postRouter.post('', async (req, res, next) => {
     title: title,
     author: author,
     url: url,
-    likes: likes,
+    likes: likes || 0,
     user: user._id,
   });
 
