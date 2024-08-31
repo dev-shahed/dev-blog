@@ -20,7 +20,7 @@ userRouter.post('/', async (req, res) => {
 });
 
 userRouter.get('/', async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate('posts', { title: 1, author: 1 });
   res.status(200).json(users);
 });
 

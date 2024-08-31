@@ -45,7 +45,7 @@ postRouter.post('', async (req, res, next) => {
 // Route to handle fetching all blog posts from the database
 // Returns a list of all blogs in the response
 postRouter.get('', async (req, res) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
   res.status(200).json(blogs);
 });
 
