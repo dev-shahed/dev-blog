@@ -5,20 +5,24 @@ const cors = require('cors');
 const middleware = require('./utils/middleware');
 const postRouter = require('./controller/posts');
 const userRouter = require('./controller/users');
+const loginRouter = require('./controller/login');
 
-// Connect Database..
+// Connect to the database
 connectDB();
 
-// Middleware setup..
+// Parse incoming JSON requests and Enable CORS
 app.use(express.json());
 app.use(cors());
 
-// Routes..
+// Define API routes
+app.use('/api/login', loginRouter);
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 
-// Middleware..
+// Handle unknown endpoints
 app.use(middleware.unknownEndpoint);
+
+// Centralized error handling
 app.use(middleware.errorHandler);
 
 module.exports = app;
