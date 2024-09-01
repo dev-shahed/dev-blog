@@ -1,27 +1,26 @@
 const postRouter = require('express').Router();
 const mongoose = require('mongoose');
 const Blog = require('../models/post.js');
-const { isMissingOrEmpty } = require('../utils/list_helper');
+const jwtHelper = require('../utils/jwt_helper');
 const User = require('../models/user.js');
+const jwt = require('jsonwebtoken');
 require('express-async-errors');
 
 // Route to handle the creation of a new blog post
 // Validates input data, checks for duplicate titles, and saves the blog to the database
 postRouter.post('', async (req, res, next) => {
   const { title, author, url, likes, userId } = req.body;
+  //Extract and Verify token..
+  const token = jwtHelper.getTokenForm(req);
+  const decodeToken = jwtHelper.verifyToken(token, process.env.JWT_SECRET);
+
+  if (!decodeToken || !decodeToken.id) {
+    return res.status(401).end();
+  }
   // Find the user by ID
-  const user = await User.findById(userId);
+  const user = await User.findById(decodeToken.id);
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
-  }
-  // Check if title or author is missing or empty
-  if (isMissingOrEmpty(title) || isMissingOrEmpty(author)) {
-    return res.status(400).json({ error: 'The title or author is missing' });
-  }
-  // Ensure the blog title is unique
-  const blogExist = await Blog.findOne({ title: title });
-  if (blogExist) {
-    return res.status(400).json({ error: 'Blog title must be unique' });
   }
 
   // Create a new blog instance with the provided data

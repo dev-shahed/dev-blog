@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const { signToken } = require('../utils/jwt_helper');
 const loginRouter = require('express').Router();
 
 loginRouter.post('/', async (req, res) => {
@@ -15,16 +16,8 @@ loginRouter.post('/', async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    // User data to be encoded in the JWT
-    const userForToken = {
-      username: user.username,
-      id: user._id,
-    };
-
     // Sign the token with the secret key
-    const token = jwt.sign(userForToken, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+    const token = signToken(user, process.env.JWT_SECRET);
     res.status(200).json({ token, username: user.username, name: user.name });
   } catch (error) {
     console.error('Error during login:', error);
