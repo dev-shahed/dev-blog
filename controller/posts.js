@@ -11,15 +11,12 @@ require('express-async-errors');
 postRouter.post('', async (req, res, next) => {
   const { title, author, url, likes, userId } = req.body;
   //Extract and Verify token from middleware
-  const decodeToken = jwtHelper.verifyToken(req.token, process.env.JWT_SECRET);
+  const decodeToken = jwtHelper.verifyToken(req.token);
 
-  if (!decodeToken || !decodeToken.id) {
-    return res.status(401).end();
-  }
   // Find the user by ID
   const user = await User.findById(decodeToken.id);
   if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    throw { status: 404, message: `user not found` };
   }
 
   // Create a new blog instance with the provided data
@@ -55,7 +52,7 @@ postRouter.get('/:id', async (req, res) => {
   const id = req.params.id;
   const theBlog = await Blog.findById(id);
   if (!theBlog) {
-    return res.status(404).json({ message: `Blog with id ${id} not found!` });
+    throw { status: 404, message: `Blog with id ${id} not found` };
   }
   res.status(200).json(theBlog);
 });
@@ -69,7 +66,7 @@ postRouter.put('/:id', async (req, res, next) => {
   const { title, author, url, likes } = req.body;
   const theBlog = await Blog.findById(id);
   if (!theBlog) {
-    return res.status(404).json({ message: `Blog with id ${id} not found!` });
+    throw { status: 404, message: `Blog with id ${id} not found` };
   }
 
   // Prepare the blog object with updated fields
@@ -92,11 +89,16 @@ postRouter.put('/:id', async (req, res, next) => {
 // If the blog is found, it is deleted from the database; otherwise, a 404 error is returned
 postRouter.delete('/:id', async (req, res, next) => {
   const id = req.params.id;
-  const theBlog = await Blog.findByIdAndDelete(id);
+  const decodeToken = jwtHelper.verifyToken(req.token);
+  const theBlog = await Blog.findById(id);
   if (!theBlog) {
-    return res.status(404).json({ message: `Blog with id ${id} not found!` });
+    throw { status: 404, message: `Blog with id ${id} not found` };
   }
 
+  if (theBlog.user.toString() !== decodeToken.id) {
+    throw { name: 'ForbiddenError' };
+  }
+  await Blog.findByIdAndDelete(id);
   res.status(204).end();
 });
 

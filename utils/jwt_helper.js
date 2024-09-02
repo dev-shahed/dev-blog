@@ -31,18 +31,17 @@ const getTokenForm = (request) => {
 };
 
 /**
- * Verifies the JWT token.
+ * Verifies the provided JWT token using the given secret key.
  *
- * @param {string} token - The JWT token to verify.
- * @param {string} secret - The secret key used to verify the token.
- * @returns {Object|null} The decoded token payload or null if invalid.
+ * @param {string} token - The JWT token to be verified.
+ * @returns {Object} The decoded token payload if verification is successful.
+ * @throws {Object} Throws an error object with the error name if verification fails.
  */
-
-const verifyToken = (token, secret) => {
+const verifyToken = (token) => {
   try {
-    return jwt.verify(token, secret);
+    return jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
-    throw error;
+    throw { name: error.name };
   }
 };
 

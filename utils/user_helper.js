@@ -12,7 +12,7 @@ const usersInDb = async () => {
     const users = await User.find({});
     return _.map(users, (user) => user.toJSON());
   } catch (error) {
-    console.log('Error fetching users:', error);
+    console.log('Error fetching users:', error.name);
     return [];
   }
 };

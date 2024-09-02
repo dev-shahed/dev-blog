@@ -60,7 +60,7 @@ const errorHandler = (error, req, res, next) => {
   }
 
   if (error.status === 404) {
-    return res.status(404).send({ error: 'resource not found' });
+    return res.status(404).send({ error: error.message });
   }
 
   res.status(500).send({ error: 'internal server error' });
