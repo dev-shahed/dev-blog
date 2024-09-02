@@ -10,9 +10,8 @@ require('express-async-errors');
 // Validates input data, checks for duplicate titles, and saves the blog to the database
 postRouter.post('', async (req, res, next) => {
   const { title, author, url, likes, userId } = req.body;
-  //Extract and Verify token..
-  const token = jwtHelper.getTokenForm(req);
-  const decodeToken = jwtHelper.verifyToken(token, process.env.JWT_SECRET);
+  //Extract and Verify token from middleware
+  const decodeToken = jwtHelper.verifyToken(req.token, process.env.JWT_SECRET);
 
   if (!decodeToken || !decodeToken.id) {
     return res.status(401).end();
