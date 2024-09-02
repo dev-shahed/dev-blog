@@ -1,4 +1,33 @@
 const logger = require('./logger');
+const jwtHelper = require('./jwt_helper');
+
+
+
+/**
+ * Middleware to extract the JWT token from the Authorization header.
+ *
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function.
+ */
+const tokenExtractor = (req, res, next) => {
+  const token = jwtHelper.getTokenForm(req);
+  if (token) {
+    req.token = token; // Attach the token to the request object
+  }
+  next(); // Continue to the next middleware or route handler
+};
+
+/**
+ * Middleware for handling errors.
+ *
+ * @param {Object} error - The error object.
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function.
+ */
+
+
 
 // Middleware for handling unknown endpoints
 const unknownEndpoint = (req, res) => {
@@ -43,4 +72,5 @@ const errorHandler = (error, req, res, next) => {
 module.exports = {
   unknownEndpoint,
   errorHandler,
+  tokenExtractor
 };

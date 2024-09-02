@@ -14,15 +14,18 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
+// Add tokenExtractor middleware
+app.use(middleware.tokenExtractor); 
+
 // Define API routes
 app.use('/api/login', loginRouter);
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 
-// Handle unknown endpoints
-app.use(middleware.unknownEndpoint);
-
 // Centralized error handling
 app.use(middleware.errorHandler);
+
+// Handle unknown endpoints
+app.use(middleware.unknownEndpoint);
 
 module.exports = app;
