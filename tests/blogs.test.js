@@ -10,6 +10,7 @@ const api = supertest(app);
 const _ = require('lodash');
 const User = require('../models/user');
 const userHelper = require('../utils/user_helper');
+const jwtHelper = require('../utils/jwt_helper');
 const bcrypt = require('bcrypt');
 require('express-async-errors');
 
@@ -99,6 +100,7 @@ describe('Blog API tests', () => {
 
   describe('Adding a blog', () => {
     test('succeeds with valid data', async () => {
+      const token = jwtHelper.signToken(testUser, process.env.JWT_SECRET);
       const newBlog = {
         title: 'A New Blog Post Demo',
         author: 'John Doe',
@@ -109,6 +111,7 @@ describe('Blog API tests', () => {
 
       await api
         .post('/api/posts')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/);
@@ -127,6 +130,7 @@ describe('Blog API tests', () => {
     });
 
     test('fails with status code 400 if data is invalid', async () => {
+      const token = jwtHelper.signToken(testUser, process.env.JWT_SECRET);
       const invalidBlog = {
         title: '',
         author: 'John Doe',
@@ -135,7 +139,11 @@ describe('Blog API tests', () => {
         userId: testUser._id.toString(),
       };
 
-      await api.post('/api/posts').send(invalidBlog).expect(400);
+      await api
+        .post('/api/posts')
+        .set('Authorization', `Bearer ${token}`)
+        .send(invalidBlog)
+        .expect(400);
 
       const blogsAtEnd = await listHelper.blogsInDb();
       assert.strictEqual(
