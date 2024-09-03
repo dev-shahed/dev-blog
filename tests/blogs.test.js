@@ -169,7 +169,7 @@ describe("Blog API tests", () => {
         blogAtEnd.length,
         blogAtStart.length - 1,
         "Blog count did not decrease"
-      );ß
+      )
       const titles = _.map(blogAtEnd, "title");
       assert(
         !titles.includes(blogToDelete.title),
