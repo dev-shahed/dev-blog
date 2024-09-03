@@ -86,7 +86,3 @@ The application uses JWT (JSON Web Token) for authentication. Users must include
 ## Additional Information
 
 - Replace `<YOUR-MONGODB-URI>`, `<YOUR-TEST-MONGODB-URI>`, and `<YOUR-JWT-SECRET>` with your actual MongoDB connection strings and JWT secret.
-
-## License
-Include your project's license information here, if applicable.
-```
