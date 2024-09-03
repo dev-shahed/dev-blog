@@ -156,9 +156,10 @@ describe('Blog API tests', () => {
 
   describe('Deleting a blog', () => {
     test('succeeds with status code 204 if id is valid', async () => {
+      const token = jwtHelper.signToken(testUser, process.env.JWT_SECRET)
       const blogAtStart = await listHelper.blogsInDb();
       const blogToDelete = blogAtStart[0];
-      await api.delete(`/api/posts/${blogToDelete.id}`).expect(204);
+      await api.delete(`/api/posts/${blogToDelete.id}`).set('Authorization', `Bearer ${token}`).expect(204);
 
       const blogAtEnd = await listHelper.blogsInDb();
       assert.strictEqual(
