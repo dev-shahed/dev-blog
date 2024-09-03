@@ -10,15 +10,11 @@ require('express-async-errors');
 // Validates input data, checks for duplicate titles, and saves the blog to the database
 postRouter.post('', async (req, res, next) => {
   const { title, author, url, likes, userId } = req.body;
-  //Extract and Verify token from middleware
-  const decodeToken = jwtHelper.verifyToken(req.token);
-
   // Find the user by ID
-  const user = await User.findById(decodeToken.id);
+  const user = await req.user;
   if (!user) {
     throw { status: 404, message: `user not found` };
   }
-
   // Create a new blog instance with the provided data
   const blog = new Blog({
     title: title,
@@ -89,13 +85,16 @@ postRouter.put('/:id', async (req, res, next) => {
 // If the blog is found, it is deleted from the database; otherwise, a 404 error is returned
 postRouter.delete('/:id', async (req, res, next) => {
   const id = req.params.id;
-  const decodeToken = jwtHelper.verifyToken(req.token);
+  const user = await req.user;
+  if (!user) {
+    throw { status: 404, message: `user not found` };
+  }
   const theBlog = await Blog.findById(id);
   if (!theBlog) {
     throw { status: 404, message: `Blog with id ${id} not found` };
   }
 
-  if (theBlog.user.toString() !== decodeToken.id) {
+  if (theBlog.user.toString() !== user.id) {
     throw { name: 'ForbiddenError' };
   }
   await Blog.findByIdAndDelete(id);

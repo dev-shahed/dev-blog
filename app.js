@@ -15,12 +15,12 @@ app.use(express.json());
 app.use(cors());
 
 // Add tokenExtractor middleware
-app.use(middleware.tokenExtractor); 
+app.use(middleware.tokenExtractor);
 
 // Define API routes
-app.use('/api/login', loginRouter);
+app.use('/api/posts', middleware.userExtractor, postRouter);
 app.use('/api/users', userRouter);
-app.use('/api/posts', postRouter);
+app.use('/api/login', loginRouter);
 
 // Centralized error handling
 app.use(middleware.errorHandler);
