@@ -1,0 +1,11 @@
+POST http://localhost:3001/api/posts
+Content-Type: application/json
+# replace the Authorization header with your own token after login
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Impob24xMjMiLCJpZCI6IjY2ZDQ0MmI2OTU5OTA5MTI0MGFmYjQxMyIsImlhdCI6MTcyNTM4NjE4NywiZXhwIjoxNzI1Mzg5Nzg3fQ.v3tW73Eczi4DN7VCpbWjRMN2kTsi3Ggq_Hw3Tb6vdQc
+
+{
+  "title": "Computer Science Distilled",
+  "author": "Wladston Ferreira Filho",
+  "url": "https://www.amazon.com/Computer-Science-Distilled-Computational-Problems/dp/0997316020",
+  "likes": 100
+}
