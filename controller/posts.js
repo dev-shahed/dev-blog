@@ -15,6 +15,13 @@ postRouter.post('', async (req, res, next) => {
   if (!user) {
     throw { status: 404, message: `user not found` };
   }
+
+  // check the title is unique
+  const existingBlog = await Blog.findOne({ title });
+  if (existingBlog) {
+    throw { status: 404, message: `Blog title must have to be unique` };
+  }
+
   // Create a new blog instance with the provided data
   const blog = new Blog({
     title: title,
