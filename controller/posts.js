@@ -35,7 +35,8 @@ postRouter.post('', async (req, res, next) => {
   const savedBlog = await blog.save();
   user.posts = user.posts.concat(savedBlog._id);
   await user.save();
-  res.status(201).json(savedBlog);
+  const populateUsername = await savedBlog.populate('user', { username: 1 });
+  res.status(201).json(populateUsername);
 });
 
 /* =============================================================== */
@@ -68,6 +69,12 @@ postRouter.put('/:id', async (req, res, next) => {
   const id = req.params.id;
   const { title, author, url, likes } = req.body;
   const theBlog = await Blog.findById(id);
+
+  const user = await req.user;
+  if (!user) {
+    throw { status: 404, message: `user not found` };
+  }
+
   if (!theBlog) {
     throw { status: 404, message: `Blog with id ${id} not found` };
   }
@@ -78,6 +85,7 @@ postRouter.put('/:id', async (req, res, next) => {
     author: author,
     url: url,
     likes: likes,
+    user: user._id,
   };
   // The `new: true` option ensures the updated document is returned
   const updatedBlog = await Blog.findByIdAndUpdate(id, blogUpdate, {
